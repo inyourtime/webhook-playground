@@ -6,7 +6,7 @@
     "lib": ["ESNext"],
     "rootDir": "src",
     "esModuleInterop": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strict": true,
     "resolveJsonModule": true,
     "removeComments": true,
@@ -16,7 +16,7 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": true
   },
   "exclude": ["node_modules", "dist"]
 }

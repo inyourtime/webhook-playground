@@ -16,7 +16,9 @@ async function buildTrees(dir: string) {
       const subFiles = await buildTrees(fullPath)
       files = files.concat(subFiles)
     } else if (entry.isFile()) {
-      files.push(fullPath)
+      if (entry.name.endsWith('.ts') || entry.name.endsWith('.js')) {
+        files.push(fullPath)
+      }
     }
   }
 
@@ -27,7 +29,13 @@ export default fp<LoaderOptions>(async function pluginLoader(fastify, opts) {
   const files = await buildTrees(opts.dir)
 
   for (const file of files) {
-    const fileExports = await import(file)
-    fastify.register(fileExports.default, fileExports.options || {})
+    try {
+      const fileExports = await import(file)
+      fastify.register(fileExports.default, fileExports.options || {})
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to load plugin from ${file}: ${error.message}`)
+      }
+    }
   }
 })
