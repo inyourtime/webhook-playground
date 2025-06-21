@@ -39,11 +39,10 @@ export default fp<LoaderOptions>(async function pluginLoader(fastify, opts) {
         const routePrefix = opts.routePrefix
         const pluginPrefix = resolvedOpts.prefix
 
-        if (routePrefix && pluginPrefix) {
-          resolvedOpts.prefix = `${routePrefix.replace(/\/$/, '')}/${pluginPrefix.replace(/^\//, '')}`
-        } else {
-          resolvedOpts.prefix = routePrefix || pluginPrefix
-        }
+        resolvedOpts.prefix =
+          routePrefix && pluginPrefix
+            ? `${routePrefix.replace(/\/$/, '')}/${pluginPrefix.replace(/^\//, '')}`
+            : routePrefix || pluginPrefix
       }
 
       fastify.register(fileExports.default, resolvedOpts)
