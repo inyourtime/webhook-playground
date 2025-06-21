@@ -13,6 +13,7 @@ export async function build() {
 
   app.register(pluginLoader, {
     dir: path.join(import.meta.dirname, 'routes'),
+    routePrefix: '/api/v1',
   })
 
   return app

@@ -2,6 +2,8 @@ import fastifySwagger from '@fastify/swagger'
 import fp from 'fastify-plugin'
 
 export default fp(async function (fastify) {
+  const docV1Url = '/api/v1/docs'
+
   /**
    * A Fastify plugin for serving Swagger (OpenAPI v2) or OpenAPI v3 schemas
    *
@@ -17,18 +19,21 @@ export default fp(async function (fastify) {
     },
   })
 
-  fastify.register(async function (fastify) {
-    fastify.get('/api/docs', { schema: { hide: true } }, (_request, reply) => {
-      reply.type('text/html').send(apiReferenceHtml)
-    })
+  fastify.register(
+    async function (fastify) {
+      fastify.get('/', (_request, reply) => {
+        reply.type('text/html').send(apiReferenceHtml(`${docV1Url}/json`))
+      })
 
-    fastify.get('/api/docs/json', { schema: { hide: true } }, (_request, reply) => {
-      reply.send(fastify.swagger())
-    })
-  })
+      fastify.get('/json', (_request, reply) => {
+        reply.send(fastify.swagger())
+      })
+    },
+    { prefix: docV1Url, preset: { schema: { hide: true } } },
+  )
 })
 
-const apiReferenceHtml = `
+const apiReferenceHtml = (url: string) => `
 <!DOCTYPE html>
 <html>
   <head>
@@ -47,7 +52,7 @@ const apiReferenceHtml = `
     <script>
       Scalar.createApiReference("#app", {
         // The URL of the OpenAPI/Swagger document
-        url: "/api/docs/json",
+        url: "${url}",
         // Avoid CORS issues
         proxyUrl: "https://proxy.scalar.com",
       });

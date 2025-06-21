@@ -4,6 +4,7 @@ import fp from 'fastify-plugin'
 
 type LoaderOptions = {
   dir: string
+  routePrefix?: string
 }
 
 async function buildTrees(dir: string) {
@@ -31,7 +32,21 @@ export default fp<LoaderOptions>(async function pluginLoader(fastify, opts) {
   for (const file of files) {
     try {
       const fileExports = await import(file)
-      fastify.register(fileExports.default, fileExports.options || {})
+
+      const resolvedOpts = { ...fileExports.options }
+
+      if (opts.routePrefix || resolvedOpts.prefix) {
+        const routePrefix = opts.routePrefix
+        const pluginPrefix = resolvedOpts.prefix
+
+        if (routePrefix && pluginPrefix) {
+          resolvedOpts.prefix = `${routePrefix.replace(/\/$/, '')}/${pluginPrefix.replace(/^\//, '')}`
+        } else {
+          resolvedOpts.prefix = routePrefix || pluginPrefix
+        }
+      }
+
+      fastify.register(fileExports.default, resolvedOpts)
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Failed to load plugin from ${file}: ${error.message}`)
