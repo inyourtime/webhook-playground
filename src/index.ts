@@ -8,7 +8,7 @@ try {
   await app.listen({
     host: '0.0.0.0',
     port: 5000,
-    listenTextResolver: (address) => `Webhook Playground listening on ${address}/api/docs`,
+    listenTextResolver: (address) => `Webhook Playground listening on ${address}/api/v1/docs`,
   })
 } catch (error) {
   app.log.error(error)
