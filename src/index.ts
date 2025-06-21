@@ -6,8 +6,8 @@ await app.ready()
 
 try {
   await app.listen({
-    host: '0.0.0.0',
-    port: 5000,
+    host: app.config.HOST,
+    port: app.config.PORT,
     listenTextResolver: (address) => `Webhook Playground listening on ${address}/api/v1/docs`,
   })
 } catch (error) {
